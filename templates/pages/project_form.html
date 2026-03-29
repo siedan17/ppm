@@ -1,0 +1,69 @@
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+{{$data := .Content}}
+{{$project := index $data "Project"}}
+{{$statuses := index $data "Statuses"}}
+{{$priorities := index $data "Priorities"}}
+{{$errors := index $data "Errors"}}
+
+<form method="POST" action="{{if $project.ID}}/projects/{{$project.ID}}{{else}}/projects{{end}}">
+    {{if $project.ID}}
+    <input type="hidden" name="_method" value="PUT">
+    {{end}}
+
+    <label>
+        Name *
+        <input type="text" name="name" value="{{$project.Name}}" required>
+        {{if $errors}}{{with index $errors "name"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+    </label>
+
+    <div class="grid">
+        <label>
+            Priority *
+            <select name="priority" required>
+                {{range $priorities}}
+                <option value="{{.}}" {{if eq . $project.Priority}}selected{{end}}>{{.}} — {{priorityLabel .}}</option>
+                {{end}}
+            </select>
+        </label>
+
+        <label>
+            Status *
+            <select name="status" required>
+                {{range $statuses}}
+                <option value="{{.}}" {{if eq . $project.Status}}selected{{end}}>{{statusLabel .}}</option>
+                {{end}}
+            </select>
+        </label>
+    </div>
+
+    <div class="grid">
+        <label>
+            Start Date *
+            <input type="date" name="start_date" value="{{$project.StartDate}}" required>
+            {{if $errors}}{{with index $errors "start_date"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+        </label>
+
+        <label>
+            End Date
+            <input type="date" name="end_date" value="{{$project.EndDate}}">
+        </label>
+    </div>
+
+    <label>
+        Static Info (markdown — company info, contacts, systems, scope)
+        <textarea name="static_info" rows="6">{{$project.StaticInfo}}</textarea>
+    </label>
+
+    <label>
+        Dynamic Info (markdown — current status, decisions, open questions)
+        <textarea name="dynamic_info" rows="6">{{$project.DynamicInfo}}</textarea>
+    </label>
+
+    <div class="actions">
+        <button type="submit">{{if $project.ID}}Update{{else}}Create{{end}} Project</button>
+        <a href="{{if $project.ID}}/projects/{{$project.ID}}{{else}}/projects{{end}}" role="button" class="outline secondary">Cancel</a>
+    </div>
+</form>
+{{end}}

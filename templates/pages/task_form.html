@@ -1,0 +1,91 @@
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+{{$data := .Content}}
+{{$task := index $data "Task"}}
+{{$projects := index $data "Projects"}}
+{{$statuses := index $data "Statuses"}}
+{{$categories := index $data "Categories"}}
+{{$errors := index $data "Errors"}}
+
+<form method="POST" action="{{if $task.ID}}/tasks/{{$task.ID}}{{else}}/tasks{{end}}">
+    {{if $task.ID}}
+    <input type="hidden" name="_method" value="PUT">
+    {{end}}
+    {{if $task.MeetingID}}
+    <input type="hidden" name="meeting_id" value="{{$task.MeetingID}}">
+    {{end}}
+
+    <label>
+        Title *
+        <input type="text" name="title" value="{{$task.Title}}" required>
+        {{if $errors}}{{with index $errors "title"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+    </label>
+
+    <label>
+        Project *
+        <select name="project_id" required>
+            <option value="">Select project...</option>
+            {{range $projects}}
+            <option value="{{.ID}}" {{if eq .ID $task.ProjectID}}selected{{end}}>{{.Name}}</option>
+            {{end}}
+        </select>
+        {{if $errors}}{{with index $errors "project_id"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+    </label>
+
+    <div class="grid">
+        <label>
+            Start Date *
+            <input type="date" name="start_date" value="{{$task.StartDate}}" required>
+            {{if $errors}}{{with index $errors "start_date"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+        </label>
+
+        <label>
+            Deadline *
+            <input type="date" name="deadline" value="{{$task.Deadline}}" required>
+            {{if $errors}}{{with index $errors "deadline"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+        </label>
+
+        <label>
+            Estimated Hours *
+            <input type="number" name="estimated_hours" value="{{$task.EstimatedHours}}" min="0.1" step="0.5" required>
+            {{if $errors}}{{with index $errors "estimated_hours"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+        </label>
+    </div>
+
+    <div class="grid">
+        <label>
+            Status
+            <select name="status">
+                {{range $statuses}}
+                <option value="{{.}}" {{if eq . $task.Status}}selected{{end}}>{{statusLabel .}}</option>
+                {{end}}
+            </select>
+        </label>
+
+        <label>
+            Category
+            <select name="category">
+                {{range $categories}}
+                <option value="{{.}}" {{if eq . $task.Category}}selected{{end}}>{{categoryLabel .}}</option>
+                {{end}}
+            </select>
+        </label>
+    </div>
+
+    <label>
+        <input type="checkbox" name="is_external" value="1" {{if $task.IsExternal}}checked{{end}}>
+        External task (waiting on customer/third party)
+    </label>
+
+    <label>
+        Description
+        <textarea name="description" rows="4">{{$task.Description}}</textarea>
+    </label>
+
+    <div class="actions">
+        <button type="submit">{{if $task.ID}}Update{{else}}Create{{end}} Task</button>
+        <a href="/tasks" role="button" class="outline secondary">Cancel</a>
+    </div>
+</form>
+{{end}}

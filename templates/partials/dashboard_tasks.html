@@ -1,0 +1,19 @@
+{{define "dashboard-tasks"}}
+{{if .}}
+<table>
+    <thead><tr><th>Task</th><th>Project</th><th>Deadline</th><th>Status</th></tr></thead>
+    <tbody>
+    {{range .}}
+    <tr class="overdue-row">
+        <td><a href="/tasks/{{.ID}}/edit">{{.Title}}</a></td>
+        <td>{{.ProjectName}}</td>
+        <td class="overdue">{{formatDate .Deadline}}</td>
+        <td><span class="status-chip status-{{.Status}}">{{statusLabel .Status}}</span></td>
+    </tr>
+    {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No overdue tasks. Nice!</p>
+{{end}}
+{{end}}

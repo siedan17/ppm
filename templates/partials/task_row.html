@@ -1,0 +1,33 @@
+{{define "task-row"}}
+<tr id="task-{{.ID}}" class="{{if .IsOverdue}}overdue-row{{end}}">
+    <td>
+        <a href="/tasks/{{.ID}}/edit">{{.Title}}</a>
+        {{if .IsExternal}}<span class="external-badge">ext</span>{{end}}
+    </td>
+    <td>{{.ProjectName}}</td>
+    <td class="{{if .IsOverdue}}overdue{{end}}">{{formatDate .Deadline}}</td>
+    <td>{{.EstimatedHours}}h</td>
+    <td>
+        <select class="status-chip clickable status-{{.Status}}"
+            hx-patch="/tasks/{{.ID}}/status"
+            hx-target="#task-{{.ID}}"
+            hx-swap="outerHTML"
+            name="status"
+            style="display:inline-block; width:auto; padding:0.15em 0.5em; margin:0; border:none; font-size:0.85em;">
+            <option value="todo" {{if eq .Status "todo"}}selected{{end}}>Todo</option>
+            <option value="in_progress" {{if eq .Status "in_progress"}}selected{{end}}>In Progress</option>
+            <option value="blocked" {{if eq .Status "blocked"}}selected{{end}}>Blocked</option>
+            <option value="done" {{if eq .Status "done"}}selected{{end}}>Done</option>
+            <option value="cancelled" {{if eq .Status "cancelled"}}selected{{end}}>Cancelled</option>
+        </select>
+    </td>
+    <td><span class="category-chip">{{categoryLabel .Category}}</span></td>
+    <td class="actions">
+        <a href="/tasks/{{.ID}}/edit">Edit</a>
+        <button class="outline secondary"
+            hx-delete="/tasks/{{.ID}}"
+            hx-confirm="Delete task '{{.Title}}'?"
+            style="font-size:0.85em">Del</button>
+    </td>
+</tr>
+{{end}}

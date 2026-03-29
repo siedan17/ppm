@@ -1,0 +1,74 @@
+{{define "content"}}
+{{$data := .Content}}
+{{$meeting := index $data "Meeting"}}
+{{$tasks := index $data "Tasks"}}
+{{$allPeople := index $data "AllPeople"}}
+
+<div class="actions">
+    <h1>{{$meeting.Title}}</h1>
+    <a href="/meetings/{{$meeting.ID}}/edit" role="button" class="outline">Edit</a>
+    <a href="/meetings/{{$meeting.ID}}/export" role="button" class="outline secondary">Export .md</a>
+</div>
+
+<p>
+    <strong>Date:</strong> {{formatDate $meeting.Date}} |
+    <strong>Project:</strong> <a href="/projects/{{$meeting.ProjectID}}">{{$meeting.ProjectName}}</a> |
+    <strong>Type:</strong> {{$meeting.MeetingType}}
+</p>
+
+<div class="info-section">
+    <h3>Participants</h3>
+    <div id="meeting-participants">
+        {{range $meeting.Participants}}
+        <span class="participant-badge" id="mp-{{$meeting.ID}}-{{.ID}}">
+            {{.Name}}{{if .Company}} ({{.Company}}){{end}}
+            <button hx-delete="/meetings/{{$meeting.ID}}/participants/{{.ID}}"
+                    hx-target="#mp-{{$meeting.ID}}-{{.ID}}"
+                    hx-swap="outerHTML"
+                    title="Remove">&times;</button>
+        </span>
+        {{end}}
+    </div>
+    <form method="POST" action="/meetings/{{$meeting.ID}}/participants" style="margin-top: 0.5em;">
+        <div class="grid">
+            <select name="person_id" required>
+                <option value="">Add participant...</option>
+                {{range $allPeople}}
+                <option value="{{.ID}}">{{.Name}}{{if .Company}} ({{.Company}}){{end}}</option>
+                {{end}}
+            </select>
+            <button type="submit">Add</button>
+        </div>
+    </form>
+</div>
+
+<div class="info-section">
+    <h3>Notes</h3>
+    <div class="markdown-content">{{$meeting.NotesHTML}}</div>
+</div>
+
+<div class="info-section">
+    <div class="actions">
+        <h3>Linked Tasks</h3>
+        <a href="/meetings/{{$meeting.ID}}/create-task" role="button" class="outline" style="font-size:0.85em">+ Create Task from Meeting</a>
+        <button disabled class="outline secondary" style="font-size:0.85em" title="Coming soon — AI task extraction">AI Extract Tasks</button>
+    </div>
+    {{if $tasks}}
+    <table>
+        <thead><tr><th>Title</th><th>Deadline</th><th>Status</th><th>Category</th></tr></thead>
+        <tbody>
+        {{range $tasks}}
+        <tr>
+            <td><a href="/tasks/{{.ID}}/edit">{{.Title}}</a></td>
+            <td>{{formatDate .Deadline}}</td>
+            <td><span class="status-chip status-{{.Status}}">{{statusLabel .Status}}</span></td>
+            <td><span class="category-chip">{{categoryLabel .Category}}</span></td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    <p>No linked tasks yet.</p>
+    {{end}}
+</div>
+{{end}}

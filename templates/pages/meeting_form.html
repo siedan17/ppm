@@ -1,0 +1,59 @@
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+{{$data := .Content}}
+{{$meeting := index $data "Meeting"}}
+{{$projects := index $data "Projects"}}
+{{$types := index $data "MeetingTypes"}}
+{{$errors := index $data "Errors"}}
+
+<form method="POST" action="{{if $meeting.ID}}/meetings/{{$meeting.ID}}{{else}}/meetings{{end}}">
+    {{if $meeting.ID}}
+    <input type="hidden" name="_method" value="PUT">
+    {{end}}
+
+    <label>
+        Title *
+        <input type="text" name="title" value="{{$meeting.Title}}" required>
+        {{if $errors}}{{with index $errors "title"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+    </label>
+
+    <div class="grid">
+        <label>
+            Project *
+            <select name="project_id" required>
+                <option value="">Select project...</option>
+                {{range $projects}}
+                <option value="{{.ID}}" {{if eq .ID $meeting.ProjectID}}selected{{end}}>{{.Name}}</option>
+                {{end}}
+            </select>
+            {{if $errors}}{{with index $errors "project_id"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+        </label>
+
+        <label>
+            Date *
+            <input type="date" name="date" value="{{$meeting.Date}}" required>
+            {{if $errors}}{{with index $errors "date"}}<small class="field-error">{{.}}</small>{{end}}{{end}}
+        </label>
+
+        <label>
+            Type
+            <select name="meeting_type">
+                {{range $types}}
+                <option value="{{.}}" {{if eq . $meeting.MeetingType}}selected{{end}}>{{statusLabel .}}</option>
+                {{end}}
+            </select>
+        </label>
+    </div>
+
+    <label>
+        Notes (markdown)
+        <textarea name="notes" rows="12">{{$meeting.Notes}}</textarea>
+    </label>
+
+    <div class="actions">
+        <button type="submit">{{if $meeting.ID}}Update{{else}}Create{{end}} Meeting</button>
+        <a href="{{if $meeting.ID}}/meetings/{{$meeting.ID}}{{else}}/meetings{{end}}" role="button" class="outline secondary">Cancel</a>
+    </div>
+</form>
+{{end}}

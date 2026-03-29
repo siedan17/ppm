@@ -1,0 +1,42 @@
+{{define "content"}}
+<div class="actions">
+    <h1>People</h1>
+    <a href="/people/new" role="button">+ New Person</a>
+</div>
+
+{{if .Content}}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{range .Content}}
+        <tr id="person-{{.ID}}">
+            <td>{{.Name}}</td>
+            <td>{{.Company}}</td>
+            <td>{{.Role}}</td>
+            <td>{{if .Email}}<a href="mailto:{{.Email}}">{{.Email}}</a>{{end}}</td>
+            <td>{{.Phone}}</td>
+            <td class="actions">
+                <a href="/people/{{.ID}}/edit">Edit</a>
+                <button class="outline secondary"
+                    hx-delete="/people/{{.ID}}"
+                    hx-target="#person-{{.ID}}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Delete {{.Name}}?">Delete</button>
+            </td>
+        </tr>
+    {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No people yet. <a href="/people/new">Add someone</a>.</p>
+{{end}}
+{{end}}

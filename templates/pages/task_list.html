@@ -1,0 +1,65 @@
+{{define "content"}}
+{{$data := .Content}}
+{{$tasks := index $data "Tasks"}}
+{{$projects := index $data "Projects"}}
+{{$statuses := index $data "Statuses"}}
+{{$categories := index $data "Categories"}}
+{{$filter := index $data "Filter"}}
+
+<div class="actions">
+    <h1>Tasks</h1>
+    <a href="/tasks/new" role="button">+ New Task</a>
+</div>
+
+<div class="filter-bar">
+    <label>
+        Project
+        <select name="project_id" hx-get="/partials/task-list" hx-target="#task-body" hx-swap="innerHTML" hx-include=".filter-bar">
+            <option value="">All</option>
+            {{range $projects}}
+            <option value="{{.ID}}" {{if eq .ID $filter.ProjectID}}selected{{end}}>{{.Name}}</option>
+            {{end}}
+        </select>
+    </label>
+    <label>
+        Status
+        <select name="status" hx-get="/partials/task-list" hx-target="#task-body" hx-swap="innerHTML" hx-include=".filter-bar">
+            <option value="">All</option>
+            {{range $statuses}}
+            <option value="{{.}}" {{if eq . $filter.Status}}selected{{end}}>{{statusLabel .}}</option>
+            {{end}}
+        </select>
+    </label>
+    <label>
+        Category
+        <select name="category" hx-get="/partials/task-list" hx-target="#task-body" hx-swap="innerHTML" hx-include=".filter-bar">
+            <option value="">All</option>
+            {{range $categories}}
+            <option value="{{.}}" {{if eq . $filter.Category}}selected{{end}}>{{categoryLabel .}}</option>
+            {{end}}
+        </select>
+    </label>
+    <label>
+        <input type="checkbox" name="overdue" value="1" {{if $filter.Overdue}}checked{{end}}
+            hx-get="/partials/task-list" hx-target="#task-body" hx-swap="innerHTML" hx-include=".filter-bar">
+        Overdue only
+    </label>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Project</th>
+            <th>Deadline</th>
+            <th>Est. Hours</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="task-body">
+    {{template "task-list-body" $tasks}}
+    </tbody>
+</table>
+{{end}}

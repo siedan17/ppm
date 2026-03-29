@@ -1,0 +1,39 @@
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+<form method="POST" action="{{if .Content.ID}}/people/{{.Content.ID}}{{else}}/people{{end}}">
+    {{if .Content.ID}}
+    <input type="hidden" name="_method" value="PUT">
+    {{end}}
+
+    <label>
+        Name *
+        <input type="text" name="name" value="{{.Content.Name}}" required>
+    </label>
+
+    <label>
+        Company
+        <input type="text" name="company" value="{{.Content.Company}}">
+    </label>
+
+    <label>
+        Role
+        <input type="text" name="role" value="{{.Content.Role}}">
+    </label>
+
+    <label>
+        Email
+        <input type="email" name="email" value="{{.Content.Email}}">
+    </label>
+
+    <label>
+        Phone
+        <input type="tel" name="phone" value="{{.Content.Phone}}">
+    </label>
+
+    <div class="actions">
+        <button type="submit">{{if .Content.ID}}Update{{else}}Create{{end}} Person</button>
+        <a href="/people" role="button" class="outline secondary">Cancel</a>
+    </div>
+</form>
+{{end}}

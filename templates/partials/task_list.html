@@ -1,0 +1,9 @@
+{{define "task-list-body"}}
+{{if .}}
+{{range .}}
+{{template "task-row" .}}
+{{end}}
+{{else}}
+<tr><td colspan="7">No tasks found.</td></tr>
+{{end}}
+{{end}}

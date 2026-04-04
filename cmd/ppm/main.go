@@ -9,10 +9,12 @@ import (
 	"os"
 
 	ppm "github.com/daniel/ppm"
-	"github.com/daniel/ppm/internal/database"
-	"github.com/daniel/ppm/internal/handlers"
-	"github.com/daniel/ppm/internal/render"
-	"github.com/daniel/ppm/internal/repository"
+	"github.com/daniel/ppm/internal/application"
+	deliveryhttp "github.com/daniel/ppm/internal/delivery/http"
+	"github.com/daniel/ppm/internal/delivery/render"
+	"github.com/daniel/ppm/internal/infrastructure/database"
+	"github.com/daniel/ppm/internal/infrastructure/persistence"
+	"github.com/daniel/ppm/internal/infrastructure/persistence/sqlcdb"
 )
 
 func main() {
@@ -37,20 +39,29 @@ func main() {
 		log.Fatalf("Failed to initialize templates: %v", err)
 	}
 
-	// Initialize repositories
-	personRepo := repository.NewPersonRepo(db)
-	projectRepo := repository.NewProjectRepo(db)
-	taskRepo := repository.NewTaskRepo(db)
-	meetingRepo := repository.NewMeetingRepo(db)
-	dashboardRepo := repository.NewDashboardRepo(db)
+	// Infrastructure: sqlc queries and repository implementations
+	queries := sqlcdb.New(db)
+	personRepo := persistence.NewPersonRepo(queries)
+	projectRepo := persistence.NewProjectRepo(queries)
+	taskRepo := persistence.NewTaskRepo(queries)
+	meetingRepo := persistence.NewMeetingRepo(queries)
+	dashboardRepo := persistence.NewDashboardRepo(queries)
 
-	// Initialize handlers
-	dashboardH := handlers.NewDashboardHandler(dashboardRepo, taskRepo, renderer)
-	peopleH := handlers.NewPeopleHandler(personRepo, renderer)
-	projectsH := handlers.NewProjectsHandler(projectRepo, personRepo, taskRepo, meetingRepo, renderer)
-	tasksH := handlers.NewTasksHandler(taskRepo, projectRepo, renderer)
-	meetingsH := handlers.NewMeetingsHandler(meetingRepo, projectRepo, personRepo, taskRepo, renderer)
-	exportH := handlers.NewExportHandler(meetingRepo, projectRepo)
+	// Application services
+	personSvc := application.NewPersonService(personRepo)
+	projectSvc := application.NewProjectService(projectRepo, taskRepo, meetingRepo, personRepo)
+	taskSvc := application.NewTaskService(taskRepo, projectRepo)
+	meetingSvc := application.NewMeetingService(meetingRepo, projectRepo, personRepo, taskRepo, renderer)
+	dashboardSvc := application.NewDashboardService(dashboardRepo, taskRepo)
+	exportSvc := application.NewExportService(meetingRepo, projectRepo)
+
+	// Delivery: HTTP handlers
+	dashboardH := deliveryhttp.NewDashboardHandler(dashboardSvc, renderer)
+	peopleH := deliveryhttp.NewPeopleHandler(personSvc, renderer)
+	projectsH := deliveryhttp.NewProjectsHandler(projectSvc, renderer)
+	tasksH := deliveryhttp.NewTasksHandler(taskSvc, renderer)
+	meetingsH := deliveryhttp.NewMeetingsHandler(meetingSvc, renderer)
+	exportH := deliveryhttp.NewExportHandler(exportSvc)
 
 	// Static files
 	staticSub, err := fs.Sub(ppm.StaticFS, "static")
@@ -112,7 +123,7 @@ func main() {
 	mux.HandleFunc("GET /meetings/{id}/export", exportH.ExportMeeting)
 
 	// Apply middleware
-	handler := handlers.LoggingMiddleware(handlers.MethodOverride(mux))
+	handler := deliveryhttp.LoggingMiddleware(deliveryhttp.MethodOverride(mux))
 
 	addr := fmt.Sprintf(":%d", *port)
 	fmt.Fprintf(os.Stderr, "PPM running at http://localhost%s\n", addr)

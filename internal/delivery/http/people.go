@@ -33,8 +33,11 @@ func (h *PeopleHandler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *PeopleHandler) New(w http.ResponseWriter, r *http.Request) {
 	h.render.Page(w, http.StatusOK, "person_form.html", render.PageData{
-		Title:   "New Person",
-		Content: &domain.Person{},
+		Title: "New Person",
+		Content: map[string]any{
+			"Person":      &domain.Person{PersonType: domain.PersonExternal},
+			"PersonTypes": domain.PersonTypes,
+		},
 	})
 }
 
@@ -45,27 +48,34 @@ func (h *PeopleHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := &domain.Person{
-		Name:    r.FormValue("name"),
-		Company: r.FormValue("company"),
-		Role:    r.FormValue("role"),
-		Email:   r.FormValue("email"),
-		Phone:   r.FormValue("phone"),
+		Name:       r.FormValue("name"),
+		Company:    r.FormValue("company"),
+		Role:       r.FormValue("role"),
+		Email:      r.FormValue("email"),
+		Phone:      r.FormValue("phone"),
+		PersonType: r.FormValue("person_type"),
 	}
 
 	if p.Name == "" {
 		h.render.Page(w, http.StatusUnprocessableEntity, "person_form.html", render.PageData{
-			Title:   "New Person",
-			Content: p,
-			Flash:   "Name is required.",
+			Title: "New Person",
+			Content: map[string]any{
+				"Person":      p,
+				"PersonTypes": domain.PersonTypes,
+			},
+			Flash: "Name is required.",
 		})
 		return
 	}
 
 	if err := h.svc.Create(p); err != nil {
 		h.render.Page(w, http.StatusUnprocessableEntity, "person_form.html", render.PageData{
-			Title:   "New Person",
-			Content: p,
-			Flash:   "Error creating person: " + err.Error(),
+			Title: "New Person",
+			Content: map[string]any{
+				"Person":      p,
+				"PersonTypes": domain.PersonTypes,
+			},
+			Flash: "Error creating person: " + err.Error(),
 		})
 		return
 	}
@@ -87,8 +97,11 @@ func (h *PeopleHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.render.Page(w, http.StatusOK, "person_form.html", render.PageData{
-		Title:   "Edit Person",
-		Content: person,
+		Title: "Edit Person",
+		Content: map[string]any{
+			"Person":      person,
+			"PersonTypes": domain.PersonTypes,
+		},
 	})
 }
 
@@ -105,28 +118,35 @@ func (h *PeopleHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := &domain.Person{
-		ID:      id,
-		Name:    r.FormValue("name"),
-		Company: r.FormValue("company"),
-		Role:    r.FormValue("role"),
-		Email:   r.FormValue("email"),
-		Phone:   r.FormValue("phone"),
+		ID:         id,
+		Name:       r.FormValue("name"),
+		Company:    r.FormValue("company"),
+		Role:       r.FormValue("role"),
+		Email:      r.FormValue("email"),
+		Phone:      r.FormValue("phone"),
+		PersonType: r.FormValue("person_type"),
 	}
 
 	if p.Name == "" {
 		h.render.Page(w, http.StatusUnprocessableEntity, "person_form.html", render.PageData{
-			Title:   "Edit Person",
-			Content: p,
-			Flash:   "Name is required.",
+			Title: "Edit Person",
+			Content: map[string]any{
+				"Person":      p,
+				"PersonTypes": domain.PersonTypes,
+			},
+			Flash: "Name is required.",
 		})
 		return
 	}
 
 	if err := h.svc.Update(p); err != nil {
 		h.render.Page(w, http.StatusUnprocessableEntity, "person_form.html", render.PageData{
-			Title:   "Edit Person",
-			Content: p,
-			Flash:   "Error updating person: " + err.Error(),
+			Title: "Edit Person",
+			Content: map[string]any{
+				"Person":      p,
+				"PersonTypes": domain.PersonTypes,
+			},
+			Flash: "Error updating person: " + err.Error(),
 		})
 		return
 	}

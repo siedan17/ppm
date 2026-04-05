@@ -96,7 +96,8 @@ func (q *Queries) GetMeetingByID(ctx context.Context, id int64) (GetMeetingByIDR
 }
 
 const getMeetingParticipants = `-- name: GetMeetingParticipants :many
-SELECT pe.id, pe.name, pe.company, pe.role, COALESCE(pe.email,'') AS email, COALESCE(pe.phone,'') AS phone
+SELECT pe.id, pe.name, pe.company, pe.role, COALESCE(pe.email,'') AS email, COALESCE(pe.phone,'') AS phone,
+    pe.person_type
 FROM meeting_participants mp
 JOIN people pe ON pe.id = mp.person_id
 WHERE mp.meeting_id = ?
@@ -104,12 +105,13 @@ ORDER BY pe.name
 `
 
 type GetMeetingParticipantsRow struct {
-	ID      int64
-	Name    string
-	Company string
-	Role    string
-	Email   string
-	Phone   string
+	ID         int64
+	Name       string
+	Company    string
+	Role       string
+	Email      string
+	Phone      string
+	PersonType string
 }
 
 func (q *Queries) GetMeetingParticipants(ctx context.Context, meetingID int64) ([]GetMeetingParticipantsRow, error) {
@@ -128,6 +130,7 @@ func (q *Queries) GetMeetingParticipants(ctx context.Context, meetingID int64) (
 			&i.Role,
 			&i.Email,
 			&i.Phone,
+			&i.PersonType,
 		); err != nil {
 			return nil, err
 		}

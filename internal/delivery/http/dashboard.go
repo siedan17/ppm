@@ -29,8 +29,8 @@ func (h *DashboardHandler) Index(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *DashboardHandler) OverdueTasks(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.svc.ListOverdueTasks()
+func (h *DashboardHandler) ActiveTasks(w http.ResponseWriter, r *http.Request) {
+	tasks, err := h.svc.ListActiveTasks()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

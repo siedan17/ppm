@@ -74,6 +74,7 @@ func (r *MeetingRepo) GetByID(id int) (*domain.Meeting, error) {
 		m.Participants = append(m.Participants, domain.Person{
 			ID: int(pr.ID), Name: pr.Name, Company: pr.Company,
 			Role: pr.Role, Email: pr.Email, Phone: pr.Phone,
+			PersonType: pr.PersonType,
 		})
 	}
 

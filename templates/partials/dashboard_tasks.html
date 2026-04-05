@@ -1,19 +1,20 @@
 {{define "dashboard-tasks"}}
 {{if .}}
 <table>
-    <thead><tr><th>Task</th><th>Project</th><th>Deadline</th><th>Status</th></tr></thead>
+    <thead><tr><th>Title</th><th>Project</th><th>Deadline</th><th>Status</th><th>Category</th></tr></thead>
     <tbody>
     {{range .}}
-    <tr class="overdue-row">
+    <tr class="{{if .IsOverdue}}overdue-row{{end}}">
         <td><a href="/tasks/{{.ID}}/edit">{{.Title}}</a></td>
         <td>{{.ProjectName}}</td>
-        <td class="overdue">{{formatDate .Deadline}}</td>
+        <td class="{{if .IsOverdue}}overdue{{end}}">{{formatDate .Deadline}}</td>
         <td><span class="status-chip status-{{.Status}}">{{statusLabel .Status}}</span></td>
+        <td><span class="category-chip">{{categoryLabel .Category}}</span></td>
     </tr>
     {{end}}
     </tbody>
 </table>
 {{else}}
-<p>No overdue tasks. Nice!</p>
+<p>No active tasks.</p>
 {{end}}
 {{end}}

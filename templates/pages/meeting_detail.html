@@ -13,14 +13,14 @@
 <p>
     <strong>Date:</strong> {{formatDate $meeting.Date}} |
     <strong>Project:</strong> <a href="/projects/{{$meeting.ProjectID}}">{{$meeting.ProjectName}}</a> |
-    <strong>Type:</strong> {{$meeting.MeetingType}}
+    <strong>Type:</strong> {{statusLabel $meeting.MeetingType}}
 </p>
 
 <div class="info-section">
     <h3>Participants</h3>
     <div id="meeting-participants">
         {{range $meeting.Participants}}
-        <span class="participant-badge" id="mp-{{$meeting.ID}}-{{.ID}}">
+        <span class="participant-badge badge-{{.PersonType}}" id="mp-{{$meeting.ID}}-{{.ID}}">
             {{.Name}}{{if .Company}} ({{.Company}}){{end}}
             <button hx-delete="/meetings/{{$meeting.ID}}/participants/{{.ID}}"
                     hx-target="#mp-{{$meeting.ID}}-{{.ID}}"
@@ -29,22 +29,20 @@
         </span>
         {{end}}
     </div>
-    <form method="POST" action="/meetings/{{$meeting.ID}}/participants" style="margin-top: 0.5em;">
-        <div class="grid">
-            <select name="person_id" required>
-                <option value="">Add participant...</option>
-                {{range $allPeople}}
-                <option value="{{.ID}}">{{.Name}}{{if .Company}} ({{.Company}}){{end}}</option>
-                {{end}}
-            </select>
-            <button type="submit">Add</button>
-        </div>
+    <form method="POST" action="/meetings/{{$meeting.ID}}/participants" class="inline-add-form">
+        <select name="person_id" required>
+            <option value="">Add participant...</option>
+            {{range $allPeople}}
+            <option value="{{.ID}}">{{.Name}}{{if .Company}} ({{.Company}}){{end}}</option>
+            {{end}}
+        </select>
+        <button type="submit">Add</button>
     </form>
 </div>
 
 <div class="info-section">
     <h3>Notes</h3>
-    <div class="markdown-content">{{$meeting.NotesHTML}}</div>
+    <div class="markdown-content">{{safeHTML $meeting.NotesHTML}}</div>
 </div>
 
 <div class="info-section">

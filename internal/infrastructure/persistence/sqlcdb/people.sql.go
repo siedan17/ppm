@@ -11,15 +11,16 @@ import (
 )
 
 const createPerson = `-- name: CreatePerson :execlastid
-INSERT INTO people (name, company, role, email, phone) VALUES (?, ?, ?, ?, ?)
+INSERT INTO people (name, company, role, email, phone, person_type) VALUES (?, ?, ?, ?, ?, ?)
 `
 
 type CreatePersonParams struct {
-	Name    string
-	Company string
-	Role    string
-	Email   sql.NullString
-	Phone   sql.NullString
+	Name       string
+	Company    string
+	Role       string
+	Email      sql.NullString
+	Phone      sql.NullString
+	PersonType string
 }
 
 func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) (int64, error) {
@@ -29,6 +30,7 @@ func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) (int
 		arg.Role,
 		arg.Email,
 		arg.Phone,
+		arg.PersonType,
 	)
 	if err != nil {
 		return 0, err
@@ -46,19 +48,20 @@ func (q *Queries) DeletePerson(ctx context.Context, id int64) error {
 }
 
 const getPersonByID = `-- name: GetPersonByID :one
-SELECT id, name, company, role, COALESCE(email,'') AS email, COALESCE(phone,'') AS phone, created_at, updated_at
+SELECT id, name, company, role, COALESCE(email,'') AS email, COALESCE(phone,'') AS phone, person_type, created_at, updated_at
 FROM people WHERE id = ?
 `
 
 type GetPersonByIDRow struct {
-	ID        int64
-	Name      string
-	Company   string
-	Role      string
-	Email     string
-	Phone     string
-	CreatedAt string
-	UpdatedAt string
+	ID         int64
+	Name       string
+	Company    string
+	Role       string
+	Email      string
+	Phone      string
+	PersonType string
+	CreatedAt  string
+	UpdatedAt  string
 }
 
 func (q *Queries) GetPersonByID(ctx context.Context, id int64) (GetPersonByIDRow, error) {
@@ -71,6 +74,7 @@ func (q *Queries) GetPersonByID(ctx context.Context, id int64) (GetPersonByIDRow
 		&i.Role,
 		&i.Email,
 		&i.Phone,
+		&i.PersonType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -78,19 +82,20 @@ func (q *Queries) GetPersonByID(ctx context.Context, id int64) (GetPersonByIDRow
 }
 
 const listPeople = `-- name: ListPeople :many
-SELECT id, name, company, role, COALESCE(email,'') AS email, COALESCE(phone,'') AS phone, created_at, updated_at
+SELECT id, name, company, role, COALESCE(email,'') AS email, COALESCE(phone,'') AS phone, person_type, created_at, updated_at
 FROM people ORDER BY name ASC
 `
 
 type ListPeopleRow struct {
-	ID        int64
-	Name      string
-	Company   string
-	Role      string
-	Email     string
-	Phone     string
-	CreatedAt string
-	UpdatedAt string
+	ID         int64
+	Name       string
+	Company    string
+	Role       string
+	Email      string
+	Phone      string
+	PersonType string
+	CreatedAt  string
+	UpdatedAt  string
 }
 
 func (q *Queries) ListPeople(ctx context.Context) ([]ListPeopleRow, error) {
@@ -109,6 +114,7 @@ func (q *Queries) ListPeople(ctx context.Context) ([]ListPeopleRow, error) {
 			&i.Role,
 			&i.Email,
 			&i.Phone,
+			&i.PersonType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -126,16 +132,17 @@ func (q *Queries) ListPeople(ctx context.Context) ([]ListPeopleRow, error) {
 }
 
 const updatePerson = `-- name: UpdatePerson :exec
-UPDATE people SET name=?, company=?, role=?, email=?, phone=? WHERE id=?
+UPDATE people SET name=?, company=?, role=?, email=?, phone=?, person_type=? WHERE id=?
 `
 
 type UpdatePersonParams struct {
-	Name    string
-	Company string
-	Role    string
-	Email   sql.NullString
-	Phone   sql.NullString
-	ID      int64
+	Name       string
+	Company    string
+	Role       string
+	Email      sql.NullString
+	Phone      sql.NullString
+	PersonType string
+	ID         int64
 }
 
 func (q *Queries) UpdatePerson(ctx context.Context, arg UpdatePersonParams) error {
@@ -145,6 +152,7 @@ func (q *Queries) UpdatePerson(ctx context.Context, arg UpdatePersonParams) erro
 		arg.Role,
 		arg.Email,
 		arg.Phone,
+		arg.PersonType,
 		arg.ID,
 	)
 	return err

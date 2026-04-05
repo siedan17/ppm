@@ -6,37 +6,62 @@
 {{$allPeople := index $data "AllPeople"}}
 
 <div class="actions">
-    <h1>
-        <span class="priority-{{$project.Priority}}">P{{$project.Priority}}</span>
-        {{$project.Name}}
-        <span class="status-chip status-{{$project.Status}}">{{statusLabel $project.Status}}</span>
-    </h1>
+    <h1>{{$project.Name}}</h1>
     <a href="/projects/{{$project.ID}}/edit" role="button" class="outline">Edit</a>
     <a href="/projects/{{$project.ID}}/export/meetings" role="button" class="outline secondary">Export Meetings</a>
 </div>
 
-<p><strong>Start:</strong> {{formatDate $project.StartDate}}
-{{if $project.EndDate}} | <strong>End:</strong> {{formatDate $project.EndDate}}{{end}}</p>
+<p>
+    <strong>Priority:</strong> <span class="priority-{{$project.Priority}}">P{{$project.Priority}} — {{priorityLabel $project.Priority}}</span> |
+    <strong>Status:</strong> <span class="status-chip status-{{$project.Status}}">{{statusLabel $project.Status}}</span> |
+    <strong>Start:</strong> {{formatDate $project.StartDate}}{{if $project.EndDate}} |
+    <strong>End:</strong> {{formatDate $project.EndDate}}{{end}}
+</p>
+
+{{if $project.GeneralInfo}}
+<div class="info-section">
+    <h3>General Info</h3>
+    <div class="markdown-content">{{markdown $project.GeneralInfo}}</div>
+</div>
+{{end}}
 
 {{if $project.StaticInfo}}
 <div class="info-section">
-    <h3>Static Info</h3>
+    <div class="actions">
+        <h3>Static Data</h3>
+        <button disabled class="outline secondary" style="font-size:0.85em" title="Coming soon — AI consistency check against meetings, tasks, and general info">AI Check Consistency</button>
+    </div>
     <div class="markdown-content">{{markdown $project.StaticInfo}}</div>
 </div>
 {{end}}
 
 {{if $project.DynamicInfo}}
 <div class="info-section">
-    <h3>Dynamic Info</h3>
+    <div class="actions">
+        <h3>Dynamic Info</h3>
+        <button disabled class="outline secondary" style="font-size:0.85em" title="Coming soon — AI update from meeting notes and tasks">AI Update</button>
+    </div>
     <div class="markdown-content">{{markdown $project.DynamicInfo}}</div>
 </div>
 {{end}}
 
 <div class="info-section">
+    <div class="actions">
+        <h3>Timeline</h3>
+        <button disabled class="outline secondary" style="font-size:0.85em" title="Coming soon — AI summarize changes from dynamic info and meeting notes">AI Update</button>
+    </div>
+    {{if $project.Timeline}}
+    <div class="markdown-content">{{markdown $project.Timeline}}</div>
+    {{else}}
+    <p>No timeline entries yet.</p>
+    {{end}}
+</div>
+
+<div class="info-section">
     <h3>Contacts</h3>
     <div id="project-people">
         {{range $project.People}}
-        <span class="participant-badge" id="pp-{{$project.ID}}-{{.ID}}">
+        <span class="participant-badge badge-{{.PersonType}}" id="pp-{{$project.ID}}-{{.ID}}">
             {{.Name}}{{if .Company}} ({{.Company}}){{end}}
             <button hx-delete="/projects/{{$project.ID}}/people/{{.ID}}"
                     hx-target="#pp-{{$project.ID}}-{{.ID}}"
@@ -45,17 +70,14 @@
         </span>
         {{end}}
     </div>
-    <form method="POST" action="/projects/{{$project.ID}}/people" style="margin-top: 0.5em;">
-        <div class="grid">
-            <select name="person_id" required>
-                <option value="">Add person...</option>
-                {{range $allPeople}}
-                <option value="{{.ID}}">{{.Name}}{{if .Company}} ({{.Company}}){{end}}</option>
-                {{end}}
-            </select>
-            <input type="text" name="role_in_project" placeholder="Role in project (optional)">
-            <button type="submit">Add</button>
-        </div>
+    <form method="POST" action="/projects/{{$project.ID}}/people" class="inline-add-form">
+        <select name="person_id" required>
+            <option value="">Add person...</option>
+            {{range $allPeople}}
+            <option value="{{.ID}}">{{.Name}}{{if .Company}} ({{.Company}}){{end}}</option>
+            {{end}}
+        </select>
+        <button type="submit">Add</button>
     </form>
 </div>
 
@@ -90,13 +112,13 @@
     </div>
     {{if $meetings}}
     <table>
-        <thead><tr><th>Date</th><th>Title</th><th>Type</th></tr></thead>
+        <thead><tr><th>Title</th><th>Date</th><th>Type</th></tr></thead>
         <tbody>
         {{range $meetings}}
         <tr>
-            <td>{{formatDate .Date}}</td>
             <td><a href="/meetings/{{.ID}}">{{.Title}}</a></td>
-            <td>{{.MeetingType}}</td>
+            <td>{{formatDate .Date}}</td>
+            <td>{{statusLabel .MeetingType}}</td>
         </tr>
         {{end}}
         </tbody>

@@ -34,16 +34,17 @@ func (r *DashboardRepo) GetDashboard() (*domain.DashboardData, error) {
 		})
 	}
 
-	// Overdue tasks
-	tRows, err := r.q.GetOverdueTasks(ctx)
+	// Active tasks
+	tRows, err := r.q.GetActiveTasks(ctx)
 	if err != nil {
 		return nil, err
 	}
 	for _, row := range tRows {
-		data.OverdueTasks = append(data.OverdueTasks, domain.Task{
+		data.ActiveTasks = append(data.ActiveTasks, domain.Task{
 			ID: int(row.ID), Title: row.Title, Deadline: row.Deadline,
-			Status: row.Status, ProjectID: int(row.ProjectID),
-			ProjectName: row.ProjectName, IsOverdue: true,
+			Status: row.Status, Category: row.Category,
+			ProjectID: int(row.ProjectID), ProjectName: row.ProjectName,
+			IsOverdue: row.IsOverdue != 0,
 		})
 	}
 

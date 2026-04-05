@@ -11,8 +11,8 @@ import (
 )
 
 const createProject = `-- name: CreateProject :execlastid
-INSERT INTO projects (name, priority, start_date, end_date, status, static_info, dynamic_info)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO projects (name, priority, start_date, end_date, status, general_info, static_info, dynamic_info, timeline)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateProjectParams struct {
@@ -21,8 +21,10 @@ type CreateProjectParams struct {
 	StartDate   string
 	EndDate     sql.NullString
 	Status      string
+	GeneralInfo string
 	StaticInfo  string
 	DynamicInfo string
+	Timeline    string
 }
 
 func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (int64, error) {
@@ -32,8 +34,10 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (i
 		arg.StartDate,
 		arg.EndDate,
 		arg.Status,
+		arg.GeneralInfo,
 		arg.StaticInfo,
 		arg.DynamicInfo,
+		arg.Timeline,
 	)
 	if err != nil {
 		return 0, err
@@ -52,7 +56,7 @@ func (q *Queries) DeleteProject(ctx context.Context, id int64) error {
 
 const getProjectByID = `-- name: GetProjectByID :one
 SELECT id, name, priority, start_date, COALESCE(end_date,'') AS end_date, status,
-    static_info, dynamic_info, created_at, updated_at
+    general_info, static_info, dynamic_info, timeline, created_at, updated_at
 FROM projects WHERE id = ?
 `
 
@@ -63,8 +67,10 @@ type GetProjectByIDRow struct {
 	StartDate   string
 	EndDate     string
 	Status      string
+	GeneralInfo string
 	StaticInfo  string
 	DynamicInfo string
+	Timeline    string
 	CreatedAt   string
 	UpdatedAt   string
 }
@@ -79,8 +85,10 @@ func (q *Queries) GetProjectByID(ctx context.Context, id int64) (GetProjectByIDR
 		&i.StartDate,
 		&i.EndDate,
 		&i.Status,
+		&i.GeneralInfo,
 		&i.StaticInfo,
 		&i.DynamicInfo,
+		&i.Timeline,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -89,7 +97,7 @@ func (q *Queries) GetProjectByID(ctx context.Context, id int64) (GetProjectByIDR
 
 const getProjectPeople = `-- name: GetProjectPeople :many
 SELECT pe.id, pe.name, pe.company, pe.role, COALESCE(pe.email,'') AS email, COALESCE(pe.phone,'') AS phone,
-    pp.role_in_project
+    pe.person_type, pp.role_in_project
 FROM project_people pp
 JOIN people pe ON pe.id = pp.person_id
 WHERE pp.project_id = ? ORDER BY pe.name
@@ -102,6 +110,7 @@ type GetProjectPeopleRow struct {
 	Role          string
 	Email         string
 	Phone         string
+	PersonType    string
 	RoleInProject string
 }
 
@@ -121,6 +130,7 @@ func (q *Queries) GetProjectPeople(ctx context.Context, projectID int64) ([]GetP
 			&i.Role,
 			&i.Email,
 			&i.Phone,
+			&i.PersonType,
 			&i.RoleInProject,
 		); err != nil {
 			return nil, err
@@ -198,7 +208,7 @@ func (q *Queries) ListActiveProjects(ctx context.Context) ([]ListActiveProjectsR
 
 const listProjects = `-- name: ListProjects :many
 SELECT id, name, priority, start_date, COALESCE(end_date,'') AS end_date, status,
-    static_info, dynamic_info, created_at, updated_at
+    general_info, static_info, dynamic_info, timeline, created_at, updated_at
 FROM projects ORDER BY priority ASC, name ASC
 `
 
@@ -209,8 +219,10 @@ type ListProjectsRow struct {
 	StartDate   string
 	EndDate     string
 	Status      string
+	GeneralInfo string
 	StaticInfo  string
 	DynamicInfo string
+	Timeline    string
 	CreatedAt   string
 	UpdatedAt   string
 }
@@ -231,8 +243,10 @@ func (q *Queries) ListProjects(ctx context.Context) ([]ListProjectsRow, error) {
 			&i.StartDate,
 			&i.EndDate,
 			&i.Status,
+			&i.GeneralInfo,
 			&i.StaticInfo,
 			&i.DynamicInfo,
+			&i.Timeline,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -264,7 +278,8 @@ func (q *Queries) UnlinkPersonFromProject(ctx context.Context, arg UnlinkPersonF
 }
 
 const updateProject = `-- name: UpdateProject :exec
-UPDATE projects SET name=?, priority=?, start_date=?, end_date=?, status=?, static_info=?, dynamic_info=? WHERE id=?
+UPDATE projects SET name=?, priority=?, start_date=?, end_date=?, status=?,
+    general_info=?, static_info=?, dynamic_info=?, timeline=? WHERE id=?
 `
 
 type UpdateProjectParams struct {
@@ -273,8 +288,10 @@ type UpdateProjectParams struct {
 	StartDate   string
 	EndDate     sql.NullString
 	Status      string
+	GeneralInfo string
 	StaticInfo  string
 	DynamicInfo string
+	Timeline    string
 	ID          int64
 }
 
@@ -285,8 +302,10 @@ func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) er
 		arg.StartDate,
 		arg.EndDate,
 		arg.Status,
+		arg.GeneralInfo,
 		arg.StaticInfo,
 		arg.DynamicInfo,
+		arg.Timeline,
 		arg.ID,
 	)
 	return err

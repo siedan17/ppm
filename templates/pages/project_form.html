@@ -52,13 +52,23 @@
     </div>
 
     <label>
-        Static Info (markdown — company info, contacts, systems, scope)
+        General Info (markdown — company info, scope, people involved)
+        <textarea name="general_info" rows="6">{{$project.GeneralInfo}}</textarea>
+    </label>
+
+    <label>
+        Static Data (markdown — decisions made, important goals, constraints)
         <textarea name="static_info" rows="6">{{$project.StaticInfo}}</textarea>
     </label>
 
     <label>
-        Dynamic Info (markdown — current status, decisions, open questions)
+        Dynamic Info (markdown — current status, open questions)
         <textarea name="dynamic_info" rows="6">{{$project.DynamicInfo}}</textarea>
+    </label>
+
+    <label>
+        Timeline (markdown — record of changes, summaries over time)
+        <textarea name="timeline" rows="6">{{$project.Timeline}}</textarea>
     </label>
 
     <div class="actions">

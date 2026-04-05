@@ -28,7 +28,8 @@ func (r *PersonRepo) List() ([]domain.Person, error) {
 	for i, row := range rows {
 		people[i] = domain.Person{
 			ID: int(row.ID), Name: row.Name, Company: row.Company, Role: row.Role,
-			Email: row.Email, Phone: row.Phone, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
+			Email: row.Email, Phone: row.Phone, PersonType: row.PersonType,
+			CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 		}
 	}
 	return people, nil
@@ -44,7 +45,8 @@ func (r *PersonRepo) GetByID(id int) (*domain.Person, error) {
 	}
 	return &domain.Person{
 		ID: int(row.ID), Name: row.Name, Company: row.Company, Role: row.Role,
-		Email: row.Email, Phone: row.Phone, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
+		Email: row.Email, Phone: row.Phone, PersonType: row.PersonType,
+		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 	}, nil
 }
 
@@ -52,6 +54,7 @@ func (r *PersonRepo) Create(p *domain.Person) error {
 	id, err := r.q.CreatePerson(context.Background(), sqlcdb.CreatePersonParams{
 		Name: p.Name, Company: p.Company, Role: p.Role,
 		Email: nullString(p.Email), Phone: nullString(p.Phone),
+		PersonType: p.PersonType,
 	})
 	if err != nil {
 		return err
@@ -63,7 +66,8 @@ func (r *PersonRepo) Create(p *domain.Person) error {
 func (r *PersonRepo) Update(p *domain.Person) error {
 	return r.q.UpdatePerson(context.Background(), sqlcdb.UpdatePersonParams{
 		Name: p.Name, Company: p.Company, Role: p.Role,
-		Email: nullString(p.Email), Phone: nullString(p.Phone), ID: int64(p.ID),
+		Email: nullString(p.Email), Phone: nullString(p.Phone),
+		PersonType: p.PersonType, ID: int64(p.ID),
 	})
 }
 

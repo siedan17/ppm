@@ -39,7 +39,7 @@
             {{end}}
         </select>
     </label>
-    <label>
+    <label class="filter-checkbox">
         <input type="checkbox" name="overdue" value="1" {{if $filter.Overdue}}checked{{end}}
             hx-get="/partials/task-list" hx-target="#task-body" hx-swap="innerHTML" hx-include=".filter-bar">
         Overdue only

@@ -17,8 +17,10 @@ type Project struct {
 	StartDate   string
 	EndDate     string
 	Status      string
+	GeneralInfo string
 	StaticInfo  string
 	DynamicInfo string
+	Timeline    string
 	CreatedAt   string
 	UpdatedAt   string
 

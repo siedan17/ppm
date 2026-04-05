@@ -1,38 +1,55 @@
 {{define "content"}}
 <h1>{{.Title}}</h1>
 
-<form method="POST" action="{{if .Content.ID}}/people/{{.Content.ID}}{{else}}/people{{end}}">
-    {{if .Content.ID}}
+{{$data := .Content}}
+{{$person := index $data "Person"}}
+{{$types := index $data "PersonTypes"}}
+
+<form method="POST" action="{{if $person.ID}}/people/{{$person.ID}}{{else}}/people{{end}}">
+    {{if $person.ID}}
     <input type="hidden" name="_method" value="PUT">
     {{end}}
 
     <label>
         Name *
-        <input type="text" name="name" value="{{.Content.Name}}" required>
+        <input type="text" name="name" value="{{$person.Name}}" required>
     </label>
 
-    <label>
-        Company
-        <input type="text" name="company" value="{{.Content.Company}}">
-    </label>
+    <div class="grid">
+        <label>
+            Company
+            <input type="text" name="company" value="{{$person.Company}}">
+        </label>
 
-    <label>
-        Role
-        <input type="text" name="role" value="{{.Content.Role}}">
-    </label>
+        <label>
+            Role
+            <input type="text" name="role" value="{{$person.Role}}">
+        </label>
 
-    <label>
-        Email
-        <input type="email" name="email" value="{{.Content.Email}}">
-    </label>
+        <label>
+            Type
+            <select name="person_type">
+                {{range $types}}
+                <option value="{{.}}" {{if eq . $person.PersonType}}selected{{end}}>{{statusLabel .}}</option>
+                {{end}}
+            </select>
+        </label>
+    </div>
 
-    <label>
-        Phone
-        <input type="tel" name="phone" value="{{.Content.Phone}}">
-    </label>
+    <div class="grid">
+        <label>
+            Email
+            <input type="email" name="email" value="{{$person.Email}}">
+        </label>
+
+        <label>
+            Phone
+            <input type="tel" name="phone" value="{{$person.Phone}}">
+        </label>
+    </div>
 
     <div class="actions">
-        <button type="submit">{{if .Content.ID}}Update{{else}}Create{{end}} Person</button>
+        <button type="submit">{{if $person.ID}}Update{{else}}Create{{end}} Person</button>
         <a href="/people" role="button" class="outline secondary">Cancel</a>
     </div>
 </form>

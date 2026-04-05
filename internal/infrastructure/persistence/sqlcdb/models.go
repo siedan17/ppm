@@ -25,14 +25,15 @@ type MeetingParticipant struct {
 }
 
 type Person struct {
-	ID        int64
-	Name      string
-	Company   string
-	Role      string
-	Email     sql.NullString
-	Phone     sql.NullString
-	CreatedAt string
-	UpdatedAt string
+	ID         int64
+	Name       string
+	Company    string
+	Role       string
+	Email      sql.NullString
+	Phone      sql.NullString
+	CreatedAt  string
+	UpdatedAt  string
+	PersonType string
 }
 
 type Project struct {
@@ -46,6 +47,8 @@ type Project struct {
 	DynamicInfo string
 	CreatedAt   string
 	UpdatedAt   string
+	GeneralInfo string
+	Timeline    string
 }
 
 type ProjectPerson struct {

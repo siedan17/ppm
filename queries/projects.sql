@@ -1,6 +1,6 @@
 -- name: ListProjects :many
 SELECT id, name, priority, start_date, COALESCE(end_date,'') AS end_date, status,
-    static_info, dynamic_info, created_at, updated_at
+    general_info, static_info, dynamic_info, timeline, created_at, updated_at
 FROM projects ORDER BY priority ASC, name ASC;
 
 -- name: ListActiveProjects :many
@@ -10,15 +10,16 @@ ORDER BY priority ASC, name ASC;
 
 -- name: GetProjectByID :one
 SELECT id, name, priority, start_date, COALESCE(end_date,'') AS end_date, status,
-    static_info, dynamic_info, created_at, updated_at
+    general_info, static_info, dynamic_info, timeline, created_at, updated_at
 FROM projects WHERE id = ?;
 
 -- name: CreateProject :execlastid
-INSERT INTO projects (name, priority, start_date, end_date, status, static_info, dynamic_info)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO projects (name, priority, start_date, end_date, status, general_info, static_info, dynamic_info, timeline)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: UpdateProject :exec
-UPDATE projects SET name=?, priority=?, start_date=?, end_date=?, status=?, static_info=?, dynamic_info=? WHERE id=?;
+UPDATE projects SET name=?, priority=?, start_date=?, end_date=?, status=?,
+    general_info=?, static_info=?, dynamic_info=?, timeline=? WHERE id=?;
 
 -- name: DeleteProject :exec
 DELETE FROM projects WHERE id = ?;
@@ -31,7 +32,7 @@ DELETE FROM project_people WHERE project_id = ? AND person_id = ?;
 
 -- name: GetProjectPeople :many
 SELECT pe.id, pe.name, pe.company, pe.role, COALESCE(pe.email,'') AS email, COALESCE(pe.phone,'') AS phone,
-    pp.role_in_project
+    pe.person_type, pp.role_in_project
 FROM project_people pp
 JOIN people pe ON pe.id = pp.person_id
 WHERE pp.project_id = ? ORDER BY pe.name;

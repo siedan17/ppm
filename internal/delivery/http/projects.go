@@ -55,8 +55,10 @@ func (h *ProjectsHandler) Create(w http.ResponseWriter, r *http.Request) {
 		StartDate:   r.FormValue("start_date"),
 		EndDate:     r.FormValue("end_date"),
 		Status:      r.FormValue("status"),
+		GeneralInfo: r.FormValue("general_info"),
 		StaticInfo:  r.FormValue("static_info"),
 		DynamicInfo: r.FormValue("dynamic_info"),
+		Timeline:    r.FormValue("timeline"),
 	}
 
 	errors := domain.ValidateProject(p)
@@ -157,8 +159,10 @@ func (h *ProjectsHandler) Update(w http.ResponseWriter, r *http.Request) {
 		StartDate:   r.FormValue("start_date"),
 		EndDate:     r.FormValue("end_date"),
 		Status:      r.FormValue("status"),
+		GeneralInfo: r.FormValue("general_info"),
 		StaticInfo:  r.FormValue("static_info"),
 		DynamicInfo: r.FormValue("dynamic_info"),
+		Timeline:    r.FormValue("timeline"),
 	}
 
 	errors := domain.ValidateProject(p)

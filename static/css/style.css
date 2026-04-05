@@ -1,28 +1,85 @@
-/* PPM Custom Styles */
+/* PPM — Minimal overrides on Pico CSS */
 
-/* Priority colors */
-.priority-1 { color: var(--pico-color-red-500, #dc3545); font-weight: bold; }
-.priority-2 { color: var(--pico-color-orange-500, #fd7e14); font-weight: bold; }
-.priority-3 { color: var(--pico-color-yellow-600, #ca8a04); }
-.priority-4 { color: var(--pico-color-blue-500, #0d6efd); }
-.priority-5 { color: var(--pico-color-grey-500, #6c757d); }
+/* === Global spacing reset === */
+h1, h2, h3, h4 { margin-bottom: 0.5rem; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.1rem; margin-top: 0; }
 
-/* Status chips */
-.status-chip {
-    display: inline-block;
-    padding: 0.15em 0.5em;
-    border-radius: 4px;
-    font-size: 0.85em;
-    font-weight: 500;
-    cursor: default;
+p { margin-bottom: 0.5rem; }
+
+main.container { padding-top: 1rem; padding-bottom: 1rem; }
+footer.container { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+/* === Tables === */
+table { font-size: 0.9rem; margin-bottom: 1rem; }
+th { white-space: nowrap; }
+th, td { padding: 0.4rem 0.6rem; }
+
+/* === Forms === */
+label { margin-bottom: 0.5rem; }
+input, select, textarea { margin-bottom: 0; }
+form .grid { margin-bottom: 0.5rem; }
+
+button, [role="button"] { padding: 0.4rem 0.8rem; margin-bottom: 0; }
+
+/* === Layout patterns === */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
 }
 
-.status-chip.clickable {
+.actions h1, .actions h3 { margin-bottom: 0; margin-right: auto; }
+
+/* Prevent flex layout from breaking table action cells */
+td.actions {
+    display: table-cell;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+td.actions a, td.actions button { display: inline; }
+
+.delete-link { color: #dc3545; text-decoration: none; cursor: pointer; }
+.delete-link:hover { color: #a71d2a; text-decoration: underline; }
+
+.filter-bar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: end;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.filter-bar label { margin-bottom: 0; }
+.filter-bar select, .filter-bar input[type="date"] { margin-bottom: 0; min-width: 140px; }
+
+.filter-checkbox {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: center;
+    white-space: nowrap;
     cursor: pointer;
 }
 
-.status-chip.clickable:hover {
-    opacity: 0.8;
+.filter-checkbox input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+    height: auto;
+}
+
+/* === Status chips === */
+.status-chip {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .status-todo        { background: #e2e3e5; color: #383d41; }
@@ -36,31 +93,45 @@
 .status-completed   { background: #cce5ff; color: #004085; }
 .status-archived    { background: #e2e3e5; color: #6c757d; }
 
-/* Category labels */
+.status-internal    { background: #cce5ff; color: #004085; }
+.status-external    { background: #fff3cd; color: #856404; }
+
+/* === Priority === */
+.priority-1 { color: #dc3545; font-weight: bold; }
+.priority-2 { color: #fd7e14; font-weight: bold; }
+.priority-3 { color: #ca8a04; }
+.priority-4 { color: #0d6efd; }
+.priority-5 { color: #6c757d; }
+
+/* === Category === */
 .category-chip {
     display: inline-block;
-    padding: 0.1em 0.4em;
+    padding: 0.1rem 0.4rem;
     border-radius: 3px;
-    font-size: 0.8em;
+    font-size: 0.8rem;
     background: #f0f0f0;
     color: #333;
 }
 
-/* Overdue highlight */
-.overdue {
-    color: #dc3545;
-    font-weight: bold;
+/* === Overdue === */
+.overdue { color: #dc3545; font-weight: bold; }
+tr.overdue-row { background-color: rgba(220, 53, 69, 0.05); }
+
+/* === External badge === */
+.external-badge {
+    display: inline-block;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    background: #ffeeba;
+    color: #856404;
 }
 
-tr.overdue-row {
-    background-color: rgba(220, 53, 69, 0.05);
-}
-
-/* Flash messages */
+/* === Flash messages === */
 .flash {
-    padding: 0.75em 1em;
-    margin-bottom: 1em;
-    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+    border-radius: 3px;
     background: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
@@ -72,28 +143,23 @@ tr.overdue-row {
     border-color: #f5c6cb;
 }
 
-/* Form validation errors */
-.field-error {
-    color: #dc3545;
-    font-size: 0.85em;
-    margin-top: 0.25em;
-}
+/* === Field errors === */
+.field-error { color: #dc3545; font-size: 0.85rem; margin-top: 0.15rem; }
 
-input:invalid, select:invalid, textarea:invalid {
-    border-color: #dc3545;
-}
-
-/* Participant badges */
+/* === Participant badges === */
 .participant-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.25em;
-    padding: 0.2em 0.5em;
+    gap: 0.25rem;
+    padding: 0.15rem 0.4rem;
     background: #e9ecef;
     border-radius: 3px;
-    font-size: 0.85em;
-    margin: 0.15em;
+    font-size: 0.85rem;
+    margin: 0.1rem;
 }
+
+.participant-badge.badge-internal { background: #d4edda; color: #155724; }
+.participant-badge.badge-external { background: #ffeeba; color: #856404; }
 
 .participant-badge button {
     background: none;
@@ -101,120 +167,67 @@ input:invalid, select:invalid, textarea:invalid {
     color: #dc3545;
     cursor: pointer;
     padding: 0;
-    font-size: 1em;
+    font-size: 1rem;
     line-height: 1;
     margin: 0;
     width: auto;
 }
 
-/* Dashboard cards */
+/* === Inline add forms (contacts, participants) === */
+.inline-add-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.inline-add-form select { flex: 1; margin-bottom: 0; }
+.inline-add-form input { flex: 1; margin-bottom: 0; }
+.inline-add-form button { white-space: nowrap; margin-bottom: 0; width: auto; }
+
+/* === Dashboard === */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5em;
-    margin-bottom: 1.5em;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
+    .dashboard-grid { grid-template-columns: 1fr; }
 }
 
 .dashboard-card {
     border: 1px solid var(--pico-muted-border-color, #dee2e6);
-    border-radius: 8px;
-    padding: 1em;
+    border-radius: 4px;
+    padding: 0.75rem;
 }
 
-.dashboard-card h3 {
-    margin-top: 0;
-    font-size: 1.1em;
-}
+.dashboard-card h3 { margin-top: 0; }
 
-/* Project detail sections */
-.info-section {
-    margin-bottom: 1.5em;
-}
-
+/* === Info sections (project/meeting detail) === */
+.info-section { margin-bottom: 1rem; }
 .info-section h3 {
-    border-bottom: 2px solid var(--pico-muted-border-color, #dee2e6);
-    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--pico-muted-border-color, #dee2e6);
+    padding-bottom: 0.25rem;
 }
 
-/* Action buttons row */
-.actions {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.actions a, .actions button {
-    font-size: 0.9em;
-}
-
-/* Table tweaks */
-table {
-    font-size: 0.95em;
-}
-
-th {
-    white-space: nowrap;
-}
-
-/* Compact form layout for filters */
-.filter-bar {
-    display: flex;
-    gap: 0.75em;
-    align-items: end;
-    flex-wrap: wrap;
-    margin-bottom: 1em;
-}
-
-.filter-bar label {
-    margin-bottom: 0;
-}
-
-.filter-bar select, .filter-bar input {
-    margin-bottom: 0;
-    min-width: 140px;
-}
-
-/* External task indicator */
-.external-badge {
-    display: inline-block;
-    padding: 0.1em 0.3em;
-    border-radius: 3px;
-    font-size: 0.75em;
-    background: #ffeeba;
-    color: #856404;
-}
-
-/* Markdown rendered content */
-.markdown-content {
-    line-height: 1.6;
-}
-
-.markdown-content h1, .markdown-content h2, .markdown-content h3 {
-    margin-top: 1em;
-}
-
+/* === Markdown content === */
+.markdown-content { line-height: 1.5; }
+.markdown-content h1, .markdown-content h2, .markdown-content h3 { margin-top: 0.75rem; }
 .markdown-content pre {
     background: #f4f4f4;
-    padding: 1em;
-    border-radius: 4px;
+    padding: 0.75rem;
+    border-radius: 3px;
     overflow-x: auto;
 }
 
-/* Delete confirmation dialog */
+/* === Dialog === */
 dialog {
     border: 1px solid var(--pico-muted-border-color, #dee2e6);
-    border-radius: 8px;
-    padding: 1.5em;
+    border-radius: 4px;
+    padding: 1rem;
     max-width: 400px;
 }
 
-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
-}
+dialog::backdrop { background: rgba(0, 0, 0, 0.4); }

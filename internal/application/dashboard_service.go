@@ -15,6 +15,6 @@ func (s *DashboardService) GetDashboard() (*domain.DashboardData, error) {
 	return s.dashboard.GetDashboard()
 }
 
-func (s *DashboardService) ListOverdueTasks() ([]domain.Task, error) {
-	return s.tasks.ListOverdue()
+func (s *DashboardService) ListActiveTasks() ([]domain.Task, error) {
+	return s.tasks.List(domain.TaskFilter{})
 }

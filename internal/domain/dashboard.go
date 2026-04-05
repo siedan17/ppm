@@ -2,7 +2,7 @@ package domain
 
 type DashboardData struct {
 	Projects         []Project
-	OverdueTasks     []Task
+	ActiveTasks      []Task
 	UpcomingMeetings []Meeting
 }
 

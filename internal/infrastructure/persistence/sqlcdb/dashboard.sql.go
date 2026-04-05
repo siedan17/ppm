@@ -9,6 +9,58 @@ import (
 	"context"
 )
 
+const getActiveTasks = `-- name: GetActiveTasks :many
+SELECT t.id, t.title, t.deadline, t.status, t.category, t.project_id, p.name AS project_name,
+    CASE WHEN t.deadline < date('now') AND t.status NOT IN ('done','cancelled') THEN 1 ELSE 0 END AS is_overdue
+FROM tasks t
+JOIN projects p ON p.id = t.project_id
+WHERE t.status NOT IN ('done','cancelled')
+ORDER BY t.deadline ASC
+`
+
+type GetActiveTasksRow struct {
+	ID          int64
+	Title       string
+	Deadline    string
+	Status      string
+	Category    string
+	ProjectID   int64
+	ProjectName string
+	IsOverdue   int64
+}
+
+func (q *Queries) GetActiveTasks(ctx context.Context) ([]GetActiveTasksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getActiveTasks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetActiveTasksRow{}
+	for rows.Next() {
+		var i GetActiveTasksRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Deadline,
+			&i.Status,
+			&i.Category,
+			&i.ProjectID,
+			&i.ProjectName,
+			&i.IsOverdue,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getDashboardProjects = `-- name: GetDashboardProjects :many
 SELECT p.id, p.name, p.priority, p.status,
     COALESCE((SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id AND t.status NOT IN ('done','cancelled')), 0) AS task_count,
@@ -43,53 +95,6 @@ func (q *Queries) GetDashboardProjects(ctx context.Context) ([]GetDashboardProje
 			&i.Status,
 			&i.TaskCount,
 			&i.OverdueCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getOverdueTasks = `-- name: GetOverdueTasks :many
-SELECT t.id, t.title, t.deadline, t.status, t.project_id, p.name AS project_name
-FROM tasks t
-JOIN projects p ON p.id = t.project_id
-WHERE t.deadline < date('now') AND t.status NOT IN ('done','cancelled')
-ORDER BY t.deadline ASC
-`
-
-type GetOverdueTasksRow struct {
-	ID          int64
-	Title       string
-	Deadline    string
-	Status      string
-	ProjectID   int64
-	ProjectName string
-}
-
-func (q *Queries) GetOverdueTasks(ctx context.Context) ([]GetOverdueTasksRow, error) {
-	rows, err := q.db.QueryContext(ctx, getOverdueTasks)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetOverdueTasksRow{}
-	for rows.Next() {
-		var i GetOverdueTasksRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Deadline,
-			&i.Status,
-			&i.ProjectID,
-			&i.ProjectName,
 		); err != nil {
 			return nil, err
 		}

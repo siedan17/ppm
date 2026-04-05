@@ -6,11 +6,12 @@ FROM projects p
 WHERE p.status = 'active'
 ORDER BY p.priority ASC, p.name ASC;
 
--- name: GetOverdueTasks :many
-SELECT t.id, t.title, t.deadline, t.status, t.project_id, p.name AS project_name
+-- name: GetActiveTasks :many
+SELECT t.id, t.title, t.deadline, t.status, t.category, t.project_id, p.name AS project_name,
+    CASE WHEN t.deadline < date('now') AND t.status NOT IN ('done','cancelled') THEN 1 ELSE 0 END AS is_overdue
 FROM tasks t
 JOIN projects p ON p.id = t.project_id
-WHERE t.deadline < date('now') AND t.status NOT IN ('done','cancelled')
+WHERE t.status NOT IN ('done','cancelled')
 ORDER BY t.deadline ASC;
 
 -- name: GetUpcomingMeetings :many

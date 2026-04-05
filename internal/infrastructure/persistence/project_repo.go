@@ -29,7 +29,8 @@ func (r *ProjectRepo) List() ([]domain.Project, error) {
 		projects[i] = domain.Project{
 			ID: int(row.ID), Name: row.Name, Priority: int(row.Priority),
 			StartDate: row.StartDate, EndDate: row.EndDate, Status: row.Status,
-			StaticInfo: row.StaticInfo, DynamicInfo: row.DynamicInfo,
+			GeneralInfo: row.GeneralInfo, StaticInfo: row.StaticInfo,
+			DynamicInfo: row.DynamicInfo, Timeline: row.Timeline,
 			CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 		}
 	}
@@ -63,7 +64,8 @@ func (r *ProjectRepo) GetByID(id int) (*domain.Project, error) {
 	p := &domain.Project{
 		ID: int(row.ID), Name: row.Name, Priority: int(row.Priority),
 		StartDate: row.StartDate, EndDate: row.EndDate, Status: row.Status,
-		StaticInfo: row.StaticInfo, DynamicInfo: row.DynamicInfo,
+		GeneralInfo: row.GeneralInfo, StaticInfo: row.StaticInfo,
+		DynamicInfo: row.DynamicInfo, Timeline: row.Timeline,
 		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
 	}
 
@@ -76,6 +78,7 @@ func (r *ProjectRepo) GetByID(id int) (*domain.Project, error) {
 		p.People = append(p.People, domain.Person{
 			ID: int(pr.ID), Name: pr.Name, Company: pr.Company,
 			Role: pr.Role, Email: pr.Email, Phone: pr.Phone,
+			PersonType: pr.PersonType,
 		})
 	}
 
@@ -86,7 +89,8 @@ func (r *ProjectRepo) Create(p *domain.Project) error {
 	id, err := r.q.CreateProject(context.Background(), sqlcdb.CreateProjectParams{
 		Name: p.Name, Priority: int64(p.Priority), StartDate: p.StartDate,
 		EndDate: nullString(p.EndDate), Status: p.Status,
-		StaticInfo: p.StaticInfo, DynamicInfo: p.DynamicInfo,
+		GeneralInfo: p.GeneralInfo, StaticInfo: p.StaticInfo,
+		DynamicInfo: p.DynamicInfo, Timeline: p.Timeline,
 	})
 	if err != nil {
 		return err
@@ -99,7 +103,8 @@ func (r *ProjectRepo) Update(p *domain.Project) error {
 	return r.q.UpdateProject(context.Background(), sqlcdb.UpdateProjectParams{
 		Name: p.Name, Priority: int64(p.Priority), StartDate: p.StartDate,
 		EndDate: nullString(p.EndDate), Status: p.Status,
-		StaticInfo: p.StaticInfo, DynamicInfo: p.DynamicInfo, ID: int64(p.ID),
+		GeneralInfo: p.GeneralInfo, StaticInfo: p.StaticInfo,
+		DynamicInfo: p.DynamicInfo, Timeline: p.Timeline, ID: int64(p.ID),
 	})
 }
 

@@ -76,7 +76,7 @@ func main() {
 
 	// Dashboard
 	mux.HandleFunc("GET /{$}", dashboardH.Index)
-	mux.HandleFunc("GET /partials/dashboard-tasks", dashboardH.OverdueTasks)
+	mux.HandleFunc("GET /partials/dashboard-tasks", dashboardH.ActiveTasks)
 
 	// People
 	mux.HandleFunc("GET /people", peopleH.List)

@@ -31,7 +31,8 @@ INSERT OR IGNORE INTO meeting_participants (meeting_id, person_id) VALUES (?, ?)
 DELETE FROM meeting_participants WHERE meeting_id = ? AND person_id = ?;
 
 -- name: GetMeetingParticipants :many
-SELECT pe.id, pe.name, pe.company, pe.role, COALESCE(pe.email,'') AS email, COALESCE(pe.phone,'') AS phone
+SELECT pe.id, pe.name, pe.company, pe.role, COALESCE(pe.email,'') AS email, COALESCE(pe.phone,'') AS phone,
+    pe.person_type
 FROM meeting_participants mp
 JOIN people pe ON pe.id = mp.person_id
 WHERE mp.meeting_id = ?

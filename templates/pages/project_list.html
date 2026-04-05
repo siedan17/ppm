@@ -8,8 +8,8 @@
 <table>
     <thead>
         <tr>
-            <th>Priority</th>
             <th>Name</th>
+            <th>Priority</th>
             <th>Status</th>
             <th>Start</th>
             <th>End</th>
@@ -19,17 +19,16 @@
     <tbody>
     {{range .Content}}
         <tr id="project-{{.ID}}">
-            <td><span class="priority-{{.Priority}}">{{priorityLabel .Priority}}</span></td>
             <td><a href="/projects/{{.ID}}">{{.Name}}</a></td>
+            <td><span class="priority-{{.Priority}}">{{priorityLabel .Priority}}</span></td>
             <td><span class="status-chip status-{{.Status}}">{{statusLabel .Status}}</span></td>
             <td>{{formatDate .StartDate}}</td>
             <td>{{if .EndDate}}{{formatDate .EndDate}}{{else}}—{{end}}</td>
             <td class="actions">
                 <a href="/projects/{{.ID}}/edit">Edit</a>
-                <button class="outline secondary"
+                <a href="#" class="delete-link"
                     hx-delete="/projects/{{.ID}}"
-                    hx-confirm="Delete project {{.Name}}? This will also delete all tasks and meetings."
-                    >Delete</button>
+                    hx-confirm="Delete project {{.Name}}? This will also delete all tasks and meetings.">Delete</a>
             </td>
         </tr>
     {{end}}

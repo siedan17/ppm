@@ -24,10 +24,9 @@
     <td><span class="category-chip">{{categoryLabel .Category}}</span></td>
     <td class="actions">
         <a href="/tasks/{{.ID}}/edit">Edit</a>
-        <button class="outline secondary"
+        <a href="#" class="delete-link"
             hx-delete="/tasks/{{.ID}}"
-            hx-confirm="Delete task '{{.Title}}'?"
-            style="font-size:0.85em">Del</button>
+            hx-confirm="Delete task '{{.Title}}'?">Delete</a>
     </td>
 </tr>
 {{end}}
